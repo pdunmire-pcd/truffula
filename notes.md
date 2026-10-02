@@ -14,9 +14,9 @@ java src/App.java  -nc  -h  src
 
 - When you run a Java program from the terminal, every word you type after the program name is passed to main as a String[] called args.
 
-- I am to create to a TruffulaOptions object using the args, pass it to a new TruffulaPrinter that uses System.out, then call printTree on the TruffalaPrinter.        
+- I am to create a TruffulaOptions object using the args, pass it to a new TruffulaPrinter that uses System.out, then call printTree on the TruffulaPrinter.        
 
-- - Example: `java src/App.java -h /Users/me/Desktop`
+- Example: `java src/App.java -h /Users/me/Desktop`
   - args = ["-h", "/Users/me/Desktop"], so args.length is 2
   - `-h` means show hidden files
   - no `-nc`, so color stays on (the default)
@@ -24,6 +24,18 @@ java src/App.java  -nc  -h  src
 
 
 ## ConsoleColor.java
+
+- An enum is a special "class" that represents a group of constants 
+
+- all the colors, and reset store a ANSI code
+
+- `toString()` is overridden so a color turns into its ANSI code when it's used as a String
+  - by default an enum's toString returns its name, so `ConsoleColor.RED + "hi"` would print "REDhi"
+  - with the override, `ConsoleColor.RED + "hi"` becomes `"\033[0;31mhi"`, and the terminal shows "hi" in red
+  - this is how ColorPrinterTest builds its expected output: `ConsoleColor.RED + "I speak for the trees"`
+
+
+
 
 ## ColorPrinter.java / ColorPrinterTest.java
 
