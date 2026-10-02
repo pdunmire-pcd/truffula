@@ -35,9 +35,32 @@ java src/App.java  -nc  -h  src
   - this is how ColorPrinterTest builds its expected output: `ConsoleColor.RED + "I speak for the trees"`
 
 
-
-
 ## ColorPrinter.java / ColorPrinterTest.java
+- currentColor : variable used to store the color to be used on selected text...
+- printStream : the destination where output gets written (the terminal when it's `System.out`, or a capture buffer in tests). It holds no text itself; it just sends text somewhere.
+
+- I will be implementing the `public void print(String message, boolean reset){}`
+
+- if I use the one-argument constructor the color starts as `ConsoleColor.WHITE` (it calls `this(printStream, ConsoleColor.WHITE)`).
+
+- Call chain (every method ends up at `print(message, reset)`):
+  - `println(message)` calls -> `println(message, true)`
+  - `println(message, reset)` calls -> `print(message + System.lineSeparator(), reset)` (adds the newline, then hands off)
+  - `print(message)` calls -> `print(message, true)`
+  - so implementing `print(message, reset)` makes all four methods work
+
+- the `print(message, boolean)` is the one I will be writing that will allow the message to be given in the current color without appending a new line and allows for an optional reset of color after printing based on the parameter.... (true resets the color; false keeps the current color).
+
+- `PrintStream` The java.io.PrintStream class adds data-printing functionality to an output stream, converting various data types (primitives, objects, text) into a readable format rather than raw bytes. It is most famously recognized as the type of Java's `System.out` and `System.err`objects.
+
+- However, you would instantiate and use your own custom PrintStream over the default System.out when you want to redirect where your data is being sent or change how it is handled.
+
+- ColorPrinterTest:
+  - Arrange: `outputStream` (a ByteArrayOutputStream) is a bucket that collects text in memory. `printStream` is wrapped around it, so anything printed to `printStream` lands in the bucket instead of the terminal.
+  - Act: `printer.println(message)` sends the text through printStream into outputStream.
+  - Assert: `outputStream.toString()` reads back everything that was printed and compares it to `expectedOutput`.
+  - expectedOutput order: `RED` + `"I speak for the trees"` + newline + `RESET`
+  - RESET comes AFTER the newline, because println adds the newline to the message before calling print, and print puts RESET at the very end.
 
 ## TruffulaOptions.java / TruffulaOptionsTest.java
 
