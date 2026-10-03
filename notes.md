@@ -63,7 +63,33 @@ java src/App.java  -nc  -h  src
   - RESET comes AFTER the newline, because println adds the newline to the message before calling print, and print puts RESET at the very end.
 
 ## TruffulaOptions.java / TruffulaOptionsTest.java
+- the fields are:
+  - `File root`: the starting folder (top of the tree). It's a File, not a String, so we can call `.exists()`, `.isDirectory()`, and `.listFiles()` on it
+  - `boolean showHidden`: true = show hidden files/folders (names starting with `.`). Set by `-h`, default false
+  - `boolean useColor`: true = print levels in colors, false = all white. Default TRUE, `-nc` turns it off
+  - `private final`: private = only this class can access it directly (others use the getters). final = it can only be set once, in the constructor, so every constructor must assign all three
 
+- the constructor that parses args is `TruffulaOptions(String[] args)`. It creates an object based on the command-line arguments. (This is what I implement in Wave 2.)
+
+- the one constructor that sets the values directly is `TruffulaOptions(File root, boolean showHidden, boolean useColor)`
+
+- which tests use which constructor:
+  - `TruffulaOptionsTest` uses the args constructor, because it's testing the parsing itself
+  - `TruffulaPrinterTest` uses the direct constructor: `new TruffulaOptions(myFolder, false, true)`. It's testing printing, not parsing, so setting values directly means the printer tests don't depend on my parsing code working, and they're quicker to set up
+
+- the default values when NO flags are given (e.g. `args = ["src"]`):
+  - `showHidden` = false (hidden files are not shown)
+  - `useColor` = true (color is on)
+
+- IllegalArgumentException is thrown when
+
+- FileNotFoundException is thrown when
+
+- @tempDir is
+
+- java.io.File : 
+- .exists() :
+- .isDirectory() :
 ## TruffulaPrinter.java / TruffulaPrinterTest.java
 
 ## AlphabeticalFileSorter.java
