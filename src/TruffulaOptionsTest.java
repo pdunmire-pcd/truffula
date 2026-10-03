@@ -115,4 +115,13 @@ public class TruffulaOptionsTest {
     //Act + Assert : creating the options should throw
     assertThrows(IllegalArgumentException.class, () -> new TruffulaOptions(args));
   }
+
+  @Test 
+  void testOnlyFlagThrows() {
+    // Arrange: only a flag, no path
+    String[] args = {"-h"};
+
+    //Act + Assert : creating the options should throw
+    assertThrows(IllegalArgumentException.class, () -> new TruffulaOptions(args));
+  }
 }
