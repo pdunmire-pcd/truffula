@@ -149,4 +149,36 @@ public class TruffulaPrinterTest {
         // Assert that the output matches the expected output exactly
         assertEquals(expected.toString(), output);
     }
+
+    @Test
+    public void testPrintTree_NestedIndentation(@TempDir File tempDir) throws IOException {
+        // Arrange: one item per folder so order doesn't matter
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        File sub = new File(myFolder, "sub");
+        sub.mkdir();
+        File file = new File(sub, "file.txt");
+        file.createNewFile();
+
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Act
+        printer.printTree();
+
+        // Assert: 0, 3, then 6 spaces; folders end in "/"
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected =
+            white + "myFolder/" + nl + reset +
+            white + "   sub/" + nl + reset +
+            white + "      file.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+}
+
 }
