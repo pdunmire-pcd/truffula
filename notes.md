@@ -81,15 +81,39 @@ java src/App.java  -nc  -h  src
   - `showHidden` = false (hidden files are not shown)
   - `useColor` = true (color is on)
 
-- IllegalArgumentException is thrown when
+- Exceptions:
+  - Throws IllegalArgumentException if:
+    - Unknown flags are provided. Examples:
+      - `["-x", "src"]` → `-x` isn't a real flag
+      - `["-color", "src"]` → close, but not `-h` or `-nc`
+      - `["hello", "src"]` → anything before the path that isn't `-h` or `-nc` counts as unknown
+    - The path argument is missing. Examples:
+      - `[]` → nothing at all (args.length is 0)
+      - `["-h"]` → only a flag, no path
+      - `["-nc", "-h"]` → only flags, no path
 
-- FileNotFoundException is thrown when
+  - Throws FileNotFoundException if:
+    - The specified directory does not exist. Examples:
+      - `["does/not/exist"]`
+      - `["-h", "/fake/folder"]`
+    - The path points to a file instead of a directory. Examples:
+      - `["README.md"]` → it's a file, not a folder
+      - `["-nc", "src/App.java"]`
 
-- @tempDir is
 
-- java.io.File : 
-- .exists() :
-- .isDirectory() :
+- @tempDir : In JUnit 5, the @TempDir annotation (from the org.junit.jupiter.api.io package) is used to automatically create and clean up temporary directories during test execution. It eliminates the need for manual file setup and teardown, preventing temporary files from cluttering your disk if a test fails. It uses it to make the files clean up more efficiently when preparing the arguments with the temp directory.
+
+  - How the test uses it: as a parameter, `testValidDirectoryIsSet(@TempDir File tempDir)`. JUnit creates an empty folder and passes it in. Then `new File(tempDir, "subfolder")` makes a File object for tempDir/subfolder, and `.mkdir()` actually creates it on disk.
+
+  - Why a real folder: my Wave 2 constructor checks `.exists()` and `.isDirectory()`, so a made-up path would throw FileNotFoundException. A hard-coded real path (like my Desktop) would only work on my computer. @TempDir works on any machine and gets deleted afterward.
+
+
+- `java.io.File`: represents a path to a file or folder on disk. Creating `new File("src")` does NOT create anything, it's just an object pointing at that path. Its methods let you ask about the path:
+  - `.exists()`: true if something (file OR folder) is actually at that path
+  - `.isDirectory()`: true only if the path exists AND is a folder
+  - examples: `README.md` → exists = true, isDirectory = false. `src` → exists = true, isDirectory = true. `does/not/exist` → both false
+  - so in Wave 2: `!exists()` means directory not found, and `exists()` but `!isDirectory()` means the path is a file. Both throw FileNotFoundException
+  - other useful methods for Wave 4: `.getName()` (just the name, e.g. "App.java"), `.listFiles()` (array of the File objects inside a folder), `.isHidden()` (Wave 5)
 ## TruffulaPrinter.java / TruffulaPrinterTest.java
 
 ## AlphabeticalFileSorter.java
