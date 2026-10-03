@@ -48,7 +48,7 @@ class ColorPrinterTest {
 
   @Test
   void testPrintWithoutReset() {
-    // Arrange: print with reset = true should add RESET at the end
+    // Arrange: print with false = true should not add RESET at the end
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     PrintStream printStream = new PrintStream(outputStream);
 
