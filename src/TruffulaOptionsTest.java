@@ -3,8 +3,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -131,6 +133,17 @@ public class TruffulaOptionsTest {
     String[] args = {new File(tempDir, "nope").getAbsolutePath()};
 
     //Act + Assert : creating the options should throw
+    assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
+  }
+
+  @Test
+  void testPathIsFileThrows(@TempDir File tempDir) throws IOException {
+    // Arrange: a path to a file, not a folder
+    File file = new File(tempDir, "file.txt");
+    file.createNewFile();
+    String[] args = {file.getAbsolutePath()};
+
+    //Act + Assert: Creating the options should throw
     assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
   }
 }
