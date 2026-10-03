@@ -101,10 +101,46 @@ public class TruffulaOptions  {
    * @throws FileNotFoundException if the directory cannot be found or if the path points to a file
    */
   public TruffulaOptions(String[] args) throws IllegalArgumentException, FileNotFoundException {
-    // TODO: Replace the below lines with your implementation
-    root = null;
-    showHidden = false;
-    useColor = false;
+    // Step 1: no args at all means no path
+    if (args.length == 0) {
+      throw new IllegalArgumentException("Missing path");
+    }
+
+    // Step 2: local variables start at the defaults
+    boolean hidden = false;   // default: don't show hidden files
+    boolean color = true;    // default: color is ON
+
+    // Step 3: check every arg EXCEPT the last one (the last one is the path)
+    for (int i = 0; i < args.length - 1; i++) {
+      if (args[i].equals("-h")) {
+        hidden = true;
+      } else if (args[i].equals("-nc")) {
+        color = false;
+      } else {
+        throw new IllegalArgumentException("Unknown flag: " + args[i]);
+      }
+    }
+
+    // Step 4: the last arg is the path. If it's a flag, the path is missing
+    String path = args[args.length - 1];
+    if (path.equals("-h") || path.equals("-nc")) {
+      throw new IllegalArgumentException("Missing path");
+    }
+
+    // Step 5: make a File and check it
+    File dir = new File(path);
+    if (!dir.exists()) {
+      throw new FileNotFoundException("Directory not found: " + path);
+    }
+    if (!dir.isDirectory()) {
+      throw new FileNotFoundException("Not a directory: " + path);
+    }
+
+    // Step 6: copy everything into the final fields (each one exactly once)
+    root = dir;
+    showHidden = hidden;
+    useColor = color;
+
   }
 
   /**
