@@ -67,7 +67,7 @@ class ColorPrinterTest {
 
   @Test
   void testDefaultColorIsWhite() {
-    // Arrange: 
+    // Arrange: no color set, so it should default to WHITE
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     PrintStream printStream = new PrintStream(outputStream);
 
@@ -78,6 +78,25 @@ class ColorPrinterTest {
 
 
     String expectedOutput = ConsoleColor.WHITE + "hi" + ConsoleColor.RESET;
+
+    // Assert: Verify the printed output
+    assertEquals(expectedOutput, outputStream.toString());
+  }
+
+  @Test
+  void testPrintlnWithoutReset() {
+    // Arrange: rintln with reset = false adds a newline but no RESET
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PrintStream printStream = new PrintStream(outputStream);
+
+    ColorPrinter printer = new ColorPrinter(printStream);
+    printer.setCurrentColor(ConsoleColor.RED);
+
+    // Act: Print the message
+    printer.println("hi", false);
+
+
+    String expectedOutput = ConsoleColor.RED + "hi" + System.lineSeparator();
 
     // Assert: Verify the printed output
     assertEquals(expectedOutput, outputStream.toString());
