@@ -115,5 +115,29 @@ java src/App.java  -nc  -h  src
   - so in Wave 2: `!exists()` means directory not found, and `exists()` but `!isDirectory()` means the path is a file. Both throw FileNotFoundException
   - other useful methods for Wave 4: `.getName()` (just the name, e.g. "App.java"), `.listFiles()` (array of the File objects inside a folder), `.isHidden()` (Wave 5)
 ## TruffulaPrinter.java / TruffulaPrinterTest.java
+- Job: print the folder tree starting at `options.getRoot()`. 
+- Fields:
+  - `options`: the TruffulaOptions (root folder, showHidden, useColor)
+  - `colorSequence`: list of colors to cycle through by depth
+  - `out`: a ColorPrinter. I print with `out.println(...)`, NEVER `System.out.println`, so the colors work and tests can capture output
+  - `DEFAULT_COLOR_SEQUENCE`: WHITE, PURPLE, YELLOW. Used when no custom colors are given
+- 4 constructors, all end up calling the 4-argument one `(options, outStream, colorSequence)`. The others just fill in defaults (`System.out` and/or `DEFAULT_COLOR_SEQUENCE`). Same "chain" idea as ColorPrinter's print methods.
+- The test uses `new TruffulaPrinter(options, printStream)` so output goes into a ByteArrayOutputStream it can check (same trick as ColorPrinterTest).
+- Output rules (from the Javadoc + test):
+  - each level is indented 3 more spaces than its parent
+  - folders end with `/`, files don't
+  - Wave 5: if showHidden is false, skip hidden files/folders (`isHidden()`)
+  - Wave 6: color depends on depth: depth 0 = WHITE, 1 = PURPLE, 2 = YELLOW, 3 = WHITE again... (it wraps around, sounds like `%`)
+  - if useColor is false, everything is WHITE
+  - Wave 7: sort each folder's contents with AlphabeticalFileSorter before printing
+- The test builds a fake tree in @TempDir: myFolder with Apple.txt, banana.txt, zebra.txt, a hidden .hidden.txt, and Documents/ (README.md, notes.txt, images/ with cat.png and Dog.png). Expected output skips .hidden.txt (showHidden = false) and is sorted + colored.
+- The provided test won't pass until Wave 7 (needs color AND sorting), so I need simpler tests for Waves 4–6.
+- `createHiddenFile(folder, ".name")`: use this for hidden-file tests so they work on Windows too.
+- Plan: a recursive helper method, something like `printHelper(File file, int depth)`. It prints the current file/folder, and if it's a folder, calls itself on each child with `depth + 1`.
 
 ## AlphabeticalFileSorter.java
+- One static method: `sort(File[] files)` takes an array of Files, sorts them by name, and returns the array.
+- It ignores case, so `apple.txt`, `Banana.txt`, `cat.txt` stay in A-B-C order even with mixed capitals.
+- It uses a lambda `(f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName())`, a tiny inline function that tells `Arrays.sort` how to compare two files. I don't need to edit or fully understand it.
+- `static` means I call it on the class itself: `AlphabeticalFileSorter.sort(files)`, no `new` needed.
+- Wave 7: call it on the result of `listFiles()` before looping over the children.
