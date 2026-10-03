@@ -124,4 +124,13 @@ public class TruffulaOptionsTest {
     //Act + Assert : creating the options should throw
     assertThrows(IllegalArgumentException.class, () -> new TruffulaOptions(args));
   }
+
+  @Test 
+  void testMissingDirectoryThrows(@TempDir File tempDir) {
+    // Arrange: a path to a folder that doesn't exist
+    String[] args = {new File(tempDir, "nope").getAbsolutePath()};
+
+    //Act + Assert : creating the options should throw
+    assertThrows(FileNotFoundException.class, () -> new TruffulaOptions(args));
+  }
 }
