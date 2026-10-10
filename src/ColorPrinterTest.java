@@ -149,7 +149,7 @@ class ColorPrinterTest {
     printer.setCurrentColor(ConsoleColor.RED);
 
     //Act: Print an empty message
-    printer.print(", true");
+    printer.print("", true);
 
     String expectedOutput = "" + ConsoleColor.RED + ConsoleColor.RESET;
 
