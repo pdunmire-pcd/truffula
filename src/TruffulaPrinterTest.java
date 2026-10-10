@@ -332,4 +332,36 @@ public class TruffulaPrinterTest {
 
         assertEquals(expected, baos.toString());
     }
+
+    @Test
+    public void testPrintTree_HiddenFileInSubfolderNotShown(@TempDir File tempDir) throws IOException {
+        // Arrange: a hidden file and a visible file one level down
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        File sub = new File(myFolder, "sub");
+        sub.mkdir();
+        createHiddenFile(sub, ".hidden.txt");
+        new File(sub, "visible.txt").createNewFile();
+
+        // showHidden = false, useColor = false
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Act
+        printer.printTree();
+
+        // Assert: the hidden file is skipped inside the subfolder too
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected =
+            white + "myFolder/" + nl + reset +
+            white + "   sub/" + nl + reset +
+            white + "      visible.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
 }
