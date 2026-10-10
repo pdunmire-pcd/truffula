@@ -116,6 +116,9 @@ public class TruffulaPrinter {
       out.println(indent + file.getName() + "/");
       File[] children = file.listFiles();
       for (File child : children) {
+        if (!options.isShowHidden() && child.isHidden()){
+          continue;
+        }
         printHelper(child, depth + 1);      // children are one level deeper
       }
     } else {

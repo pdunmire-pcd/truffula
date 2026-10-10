@@ -212,12 +212,12 @@ public class TruffulaPrinterTest {
     
     @Test 
     public void testPrintTree_HiddenFileShown(@TempDir File tempDir) throws IOException {
-        //Arrange : one hidden file and one visible file
+        // Arrange: only a hidden file
         File myFolder = new File(tempDir, "myFolder");
         myFolder.mkdir();
         createHiddenFile(myFolder, ".hidden.txt");
 
-        // showHidden = false, useColor = false
+        // showHidden = true, useColor = false
         TruffulaOptions options = new TruffulaOptions(myFolder, true, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
@@ -232,7 +232,7 @@ public class TruffulaPrinterTest {
         ConsoleColor reset = ConsoleColor.RESET;
 
         String expected = 
-            white + "myFolder/" + nl + reset + white + " .hidden.txt" + nl + reset;
+            white + "myFolder/" + nl + reset + white + "   .hidden.txt" + nl + reset;
 
         assertEquals(expected, baos.toString());
     }
