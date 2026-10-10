@@ -119,4 +119,23 @@ class ColorPrinterTest {
     // Assert: Verify the printed output
     assertEquals(expectedOutput, outputStream.toString());
   }
+
+  @Test 
+  void testTwoPrintsInARow() {
+    //Arrange: two prints, only the second one resets
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PrintStream printStream = new PrintStream(outputStream);
+
+    ColorPrinter printer = new ColorPrinter(printStream);
+    printer.setCurrentColor(ConsoleColor.RED);
+
+    //Act: Print two messages
+    printer.print("a", false);
+    printer.print("b", true);
+
+    String expectedOutput = ConsoleColor.RED + "a" + ConsoleColor.RED + "b" + ConsoleColor.RESET;
+
+    //Assert: Verify the printed output
+    assertEquals(expectedOutput, outputStream.toString());
+  }
 }
