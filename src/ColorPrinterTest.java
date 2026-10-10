@@ -101,4 +101,22 @@ class ColorPrinterTest {
     // Assert: Verify the printed output
     assertEquals(expectedOutput, outputStream.toString());
   }
+
+  @Test
+  void testPrintWithDifferentColor() {
+    // Arrange: use GREEN to show the color isn't hard-coded to red
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PrintStream printStream = new PrintStream(outputStream);
+
+    ColorPrinter printer = new ColorPrinter(printStream);
+    printer.setCurrentColor(ConsoleColor.GREEN);
+
+    // Act: Print the message
+    printer.print("hi");
+
+    String expectedOutput = ConsoleColor.GREEN + "hi" + ConsoleColor.RESET;
+
+    // Assert: Verify the printed output
+    assertEquals(expectedOutput, outputStream.toString());
+  }
 }
