@@ -237,5 +237,41 @@ public class TruffulaPrinterTest {
         assertEquals(expected, baos.toString());
     }
 
+    @Test
+    public void testPrintTree_ColorCycleByDepth(@TempDir File tempDir) throws IOException {
+        // Arrange: one item per folder so order doesn't matter
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        File sub = new File(myFolder, "sub");
+        sub.mkdir();
+        File deep = new File(sub, "deep");
+        deep.mkdir();
+        File file = new File(deep, "file.txt");
+        file.createNewFile();
+
+        // showHidden = false, useColor = true
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, true);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Act
+        printer.printTree();
+
+        // Assert: white, purple, yellow, then white again at depth 3
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor purple = ConsoleColor.PURPLE;
+        ConsoleColor yellow = ConsoleColor.YELLOW;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected =
+            white + "myFolder/" + nl + reset +
+            purple + "   sub/" + nl + reset +
+            yellow + "      deep/" + nl + reset +
+            white + "         file.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
 
 }

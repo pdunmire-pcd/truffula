@@ -110,6 +110,12 @@ public class TruffulaPrinter {
 
   private void printHelper(File file, int depth) {
     String indent = "   ".repeat(depth);   // 3 spaces × depth
+    //pick the color for this depth
+    ConsoleColor color = ConsoleColor.WHITE;
+    if (options.isUseColor()){
+      color = colorSequence.get(depth % colorSequence.size());
+    }
+    out.setCurrentColor(color);
 
     if (file.isDirectory()) {
       // it's a folder: print its name with a slash, then do the same for everything inside it
