@@ -274,4 +274,37 @@ public class TruffulaPrinterTest {
         assertEquals(expected, baos.toString());
     }
 
+    @Test 
+    public void testPrintTree_SortsAlphabeticallyIgnoringCase(@TempDir File tempDir) throws IOException {
+        //Arrange: files created out of order, with mixed upper and lower case
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        new File(myFolder, "zebra.txt").createNewFile();
+        new File(myFolder, "Cherry.txt").createNewFile();
+        new File(myFolder, "apple.txt").createNewFile();
+        new File(myFolder, "Banana.txt").createNewFile();
+
+        //showHidden = false, useColor = false
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        //Act
+        printer.printTree();
+
+        //Assert: A-Z order, capital letters don't change the order
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected =
+            white + "myFolder/" + nl + reset +
+            white + "   apple.txt" + nl + reset +
+            white + "   Banana.txt" + nl + reset +
+            white + "   Cherry.txt" + nl + reset +
+            white + "   zebra.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
 }
