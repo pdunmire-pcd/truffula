@@ -181,4 +181,61 @@ public class TruffulaPrinterTest {
         assertEquals(expected, baos.toString());
 }
 
+    @Test 
+    public void testPrintTree_HiddenFileNotShown(@TempDir File tempDir) throws IOException {
+        //Arrange : one hidden file and one visible file
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        createHiddenFile(myFolder, ".hidden.txt");
+        File visible = new File(myFolder, "visible.txt");
+        visible.createNewFile();
+
+        // showHidden = false, useColor = false
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        //Act
+        printer.printTree();
+
+        // Assert: the hidden file is NOT printed
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected = 
+            white + "myFolder/" + nl + reset + white + "   visible.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
+    
+    @Test 
+    public void testPrintTree_HiddenFileShown(@TempDir File tempDir) throws IOException {
+        //Arrange : one hidden file and one visible file
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+        createHiddenFile(myFolder, ".hidden.txt");
+
+        // showHidden = false, useColor = false
+        TruffulaOptions options = new TruffulaOptions(myFolder, true, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        //Act
+        printer.printTree();
+
+        // Assert: the hidden file IS printed
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected = 
+            white + "myFolder/" + nl + reset + white + " .hidden.txt" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
+
+
 }
