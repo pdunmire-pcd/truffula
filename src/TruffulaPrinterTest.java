@@ -307,4 +307,29 @@ public class TruffulaPrinterTest {
 
         assertEquals(expected, baos.toString());
     }
+
+    @Test
+    public void testPrintTree_EmptyFolder(@TempDir File tempDir) {
+        // Arrange: a folder with nothing inside
+        File myFolder = new File(tempDir, "myFolder");
+        myFolder.mkdir();
+
+        // showHidden = false, useColor = false
+        TruffulaOptions options = new TruffulaOptions(myFolder, false, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        TruffulaPrinter printer = new TruffulaPrinter(options, printStream);
+
+        // Act
+        printer.printTree();
+
+        // Assert: only the folder name is printed
+        String nl = System.lineSeparator();
+        ConsoleColor white = ConsoleColor.WHITE;
+        ConsoleColor reset = ConsoleColor.RESET;
+
+        String expected = white + "myFolder/" + nl + reset;
+
+        assertEquals(expected, baos.toString());
+    }
 }
