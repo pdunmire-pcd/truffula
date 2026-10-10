@@ -120,7 +120,7 @@ public class TruffulaPrinter {
     if (file.isDirectory()) {
       // it's a folder: print its name with a slash, then do the same for everything inside it
       out.println(indent + file.getName() + "/");
-      File[] children = file.listFiles();
+      File[] children = AlphabeticalFileSorter.sort(file.listFiles());
       for (File child : children) {
         if (!options.isShowHidden() && child.isHidden()){
           continue;
